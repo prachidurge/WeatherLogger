@@ -1,4 +1,4 @@
-package com.weatherlogger.data
+package com.weatherlogger.data.entity
 
 
 import com.google.gson.annotations.SerializedName
