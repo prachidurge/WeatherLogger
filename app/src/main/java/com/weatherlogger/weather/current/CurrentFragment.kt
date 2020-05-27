@@ -4,23 +4,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.weatherlogger.R
-import com.weatherlogger.data.network.ConnectivityInterceptorImpl
-import com.weatherlogger.data.network.WeatherAPIService
-import com.weatherlogger.data.network.WeatherNetworkDataSourceImpl
+import com.weatherlogger.ui.base.ScopedFragment
 import kotlinx.android.synthetic.main.current_fragment.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.kodein.di.KodeinAware
+import org.kodein.di.android.x.closestKodein
+import org.kodein.di.generic.instance
 
-class CurrentFragment : Fragment() {
+class CurrentFragment : ScopedFragment(), KodeinAware {
+    override val kodein by closestKodein()
+    private val viewModelFactory: CurrentViewModelFactory by instance()
 
-    companion object {
-        fun newInstance() = CurrentFragment()
-    }
 
     private lateinit var viewModel: CurrentViewModel
 
@@ -33,19 +30,18 @@ class CurrentFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(CurrentViewModel::class.java)
-        // TODO: Use the ViewModel
-       // val apiService = WeatherAPIService()
-        val apiService = WeatherAPIService(
-            ConnectivityInterceptorImpl(this.requireContext()))
-        val weatherNetworkDataSource = WeatherNetworkDataSourceImpl(apiService)
-        weatherNetworkDataSource.downloadMainWeather.observe(this, Observer {
-            tv_current.text = it.main.toString()
-        })
-        GlobalScope.launch (Dispatchers.Main){
-           weatherNetworkDataSource.getWeatherData("Vadodara")
+        viewModel = ViewModelProvider(this, viewModelFactory).get(CurrentViewModel::class.java)
 
-        }
+        bindUI()
+    }
+
+    private fun bindUI() = launch{
+        val mainWeather = viewModel.weather.await()
+        mainWeather.observe(this@CurrentFragment, Observer {
+            if(it==null) return@Observer
+                tv_current.text = it.toString()
+
+        })
     }
 
 }
