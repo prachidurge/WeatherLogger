@@ -5,9 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.weatherlogger.R
-import com.weatherlogger.data.WeatherAPIService
+import com.weatherlogger.data.network.ConnectivityInterceptorImpl
+import com.weatherlogger.data.network.WeatherAPIService
+import com.weatherlogger.data.network.WeatherNetworkDataSourceImpl
 import kotlinx.android.synthetic.main.current_fragment.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -32,10 +35,16 @@ class CurrentFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(CurrentViewModel::class.java)
         // TODO: Use the ViewModel
-        val apiService = WeatherAPIService()
+       // val apiService = WeatherAPIService()
+        val apiService = WeatherAPIService(
+            ConnectivityInterceptorImpl(this.requireContext()))
+        val weatherNetworkDataSource = WeatherNetworkDataSourceImpl(apiService)
+        weatherNetworkDataSource.downloadMainWeather.observe(this, Observer {
+            tv_current.text = it.main.toString()
+        })
         GlobalScope.launch (Dispatchers.Main){
-            val currentResponse = apiService.getWeatherData("Vadodara").await()
-            tv_current.text = currentResponse.main.toString()
+           weatherNetworkDataSource.getWeatherData("Vadodara")
+
         }
     }
 
