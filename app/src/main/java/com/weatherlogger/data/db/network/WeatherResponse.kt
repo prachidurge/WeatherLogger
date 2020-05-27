@@ -2,7 +2,7 @@ package com.weatherlogger.data
 
 
 import com.google.gson.annotations.SerializedName
-import com.weatherlogger.data.entity.MainEntry
+import com.weatherlogger.data.entity.Main
 import com.weatherlogger.data.entity.Sys
 
 data class WeatherResponse(
@@ -12,8 +12,8 @@ data class WeatherResponse(
    // val coord: Coord,
     val dt: Int,
     val id: Int,
-    @SerializedName("Main")
-    val main: MainEntry,
+  //  @SerializedName("Main")
+    val main: Main,
     val name: String,
     val sys: Sys,
     val timezone: Int,

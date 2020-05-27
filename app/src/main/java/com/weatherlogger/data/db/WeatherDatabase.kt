@@ -4,10 +4,10 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.weatherlogger.data.entity.MainEntry
+import com.weatherlogger.data.entity.Main
 
 @Database(
-    entities = [MainEntry::class],
+    entities = [Main::class],
     version = 1
 )
 abstract class WeatherDatabase : RoomDatabase() {
