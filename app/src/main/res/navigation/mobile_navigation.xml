@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/currentWeatherFragment"
-        android:name="com.weatherlogger.weather.current.CurrentFragment"
+        android:name="com.weatherlogger.weather.current.MainWeatherFragment"
         android:label="current_weather_fragment"
         tools:layout="@layout/current_fragment">
         <action

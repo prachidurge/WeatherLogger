@@ -12,6 +12,8 @@ WeatherLogger:
                            Time check method is prepared in isFetchCurrentNeeded() method in WeatherRepositoryImpl.kt
                         2) Some minor warnings.
                         3) If city name gives IOException, default city is set for "Delhi"
+                        4) OnViewClicked for Recyclerview is coded. The event just shows a toast. Similar architecture would be followed,
+                           just that data will be fetched from Database instead of network call.
 
 
 

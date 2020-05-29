@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.location.*
 import com.weatherlogger.R
 import com.weatherlogger.ui.base.ScopedFragment
+import com.weatherlogger.utilities.custom.RecyclerViewClickListener
 import kotlinx.android.synthetic.main.current_fragment.*
 import kotlinx.coroutines.launch
 import org.kodein.di.KodeinAware
@@ -32,15 +33,16 @@ import java.io.IOException
 import java.util.*
 
 
-class CurrentFragment : ScopedFragment(), KodeinAware {
+class MainWeatherFragment : ScopedFragment(), KodeinAware {
     private var cityName = "Delhi"
     override val kodein by closestKodein()
-    private val viewModelFactory: CurrentViewModelFactory by instance()
+    private val viewModelFactory: CurrentViewModelFactory by instance() //need to fix
     private lateinit var viewModel: CurrentViewModel
     private lateinit var adapter: MainWeatherAdapter
     val PERMISSION_ID = 42
     lateinit var mFusedLocationClient: FusedLocationProviderClient
     lateinit var mContext: Context
+    private var recyclerViewClickListener: RecyclerViewClickListener? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,6 +57,7 @@ class CurrentFragment : ScopedFragment(), KodeinAware {
         viewModel = ViewModelProvider(this, viewModelFactory).get(CurrentViewModel::class.java)
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext)
         getLastLocation()
+        setOnClickListener()
     }
 
     private fun getLastLocation() {
@@ -81,13 +84,12 @@ class CurrentFragment : ScopedFragment(), KodeinAware {
     }
 
     private fun getCityName(location: Location) {
-        // Toast.makeText(mContext, "${location.latitude}", Toast.LENGTH_LONG).show()
         try {
             val geocoder = Geocoder(mContext, Locale.getDefault())
             val addresses: List<Address> =
                 geocoder.getFromLocation(location.latitude, location.longitude, 1)
             cityName = addresses[0].locality
-        }catch (e: IOException){
+        } catch (e: IOException) {
             // when grpc fails
         }
         bindUI()
@@ -113,8 +115,6 @@ class CurrentFragment : ScopedFragment(), KodeinAware {
             var mLastLocation: Location = locationResult.lastLocation
             getCityName(mLastLocation)
             Toast.makeText(mContext, "${mLastLocation.latitude}", Toast.LENGTH_LONG).show()
-            //   findViewById<TextView>(R.id.latTextView).text = mLastLocation.latitude.toString()
-            // findViewById<TextView>(R.id.lonTextView).text = mLastLocation.longitude.toString()
         }
     }
 
@@ -172,13 +172,22 @@ class CurrentFragment : ScopedFragment(), KodeinAware {
             if (it == null) {
                 return@Observer
             } else {
-                val linearLayoutManager = LinearLayoutManager(this@CurrentFragment.context)
+                val linearLayoutManager = LinearLayoutManager(this@MainWeatherFragment.context)
                 rv_weather_data!!.layoutManager = linearLayoutManager
-                adapter = MainWeatherAdapter(it, cityName)
+
+                adapter = MainWeatherAdapter(it, cityName, recyclerViewClickListener)
                 rv_weather_data.adapter = adapter
             }
 
         })
+    }
+
+    private fun setOnClickListener() {
+        recyclerViewClickListener = object : RecyclerViewClickListener {
+            override fun onRowClicked(position: Int) {
+                Toast.makeText(mContext, "Details Page.. ", Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
 }
