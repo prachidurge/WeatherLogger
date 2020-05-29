@@ -9,5 +9,9 @@ WeatherLogger:
                4) kodein (tried first time)
 
 5) Tasks to be spilled: 1) Save button and time managemet.
+                           Time check method is prepared in isFetchCurrentNeeded() method in WeatherRepositoryImpl.kt
+                        2) Some minor warnings.
+                        3) If city name gives IOException, default city is set for "Delhi"
+
 
 

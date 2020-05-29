@@ -28,6 +28,7 @@ import kotlinx.coroutines.launch
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.closestKodein
 import org.kodein.di.generic.instance
+import java.io.IOException
 import java.util.*
 
 
@@ -81,9 +82,14 @@ class CurrentFragment : ScopedFragment(), KodeinAware {
 
     private fun getCityName(location: Location) {
         // Toast.makeText(mContext, "${location.latitude}", Toast.LENGTH_LONG).show()
-        val geocoder = Geocoder(mContext, Locale.getDefault())
-        val addresses: List<Address> = geocoder.getFromLocation(location.latitude, location.longitude, 1)
-        cityName = addresses[0].locality
+        try {
+            val geocoder = Geocoder(mContext, Locale.getDefault())
+            val addresses: List<Address> =
+                geocoder.getFromLocation(location.latitude, location.longitude, 1)
+            cityName = addresses[0].locality
+        }catch (e: IOException){
+            // when grpc fails
+        }
         bindUI()
     }
 
@@ -168,7 +174,7 @@ class CurrentFragment : ScopedFragment(), KodeinAware {
             } else {
                 val linearLayoutManager = LinearLayoutManager(this@CurrentFragment.context)
                 rv_weather_data!!.layoutManager = linearLayoutManager
-                adapter = MainWeatherAdapter(it)
+                adapter = MainWeatherAdapter(it, cityName)
                 rv_weather_data.adapter = adapter
             }
 

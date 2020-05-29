@@ -3,14 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".weather.future.FutureListFragment">
+    tools:context=".weather.current.details.MainWeatherDetailsFragment">
 
+    <!-- TODO: Update blank fragment layout -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:textSize="15sp"
-        android:textStyle="bold"
-        android:text="Under Construction..." />
+        android:text="@string/hello_blank_fragment" />
 
 </FrameLayout>
