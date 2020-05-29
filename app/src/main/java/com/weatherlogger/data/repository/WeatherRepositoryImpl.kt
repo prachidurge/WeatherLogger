@@ -22,9 +22,9 @@ class WeatherRepositoryImpl(
         }
     }
 
-    override suspend fun getWeatherData(): LiveData<out Main> {
+    override suspend fun getWeatherData(cityName:String): LiveData<out Main> {
         return withContext(Dispatchers.IO) {
-            initWeatherData()
+            initWeatherData(cityName)
             return@withContext weatherDao.getMainWeatherData()
         }
     }
@@ -36,14 +36,14 @@ class WeatherRepositoryImpl(
         }
     }
 
-    private suspend fun initWeatherData() {
+    private suspend fun initWeatherData(cityName:String) {
         if (isFetchCurrentNeeded(ZonedDateTime.now().minusHours(1))) {
-            fetchMainWeather()
+            fetchMainWeather(cityName)
         }
     }
 
-    private suspend fun fetchMainWeather() {
-        weatherNetworkDataSource.getWeatherData("Vadodara")
+    private suspend fun fetchMainWeather(cityName:String) {
+        weatherNetworkDataSource.getWeatherData(cityName)
     }
 
     private fun isFetchCurrentNeeded(lastFetchTime: ZonedDateTime): Boolean {

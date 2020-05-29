@@ -4,5 +4,5 @@ import androidx.lifecycle.LiveData
 import com.weatherlogger.data.entity.Main
 
 interface WeatherRepository {
-    suspend fun getWeatherData(): LiveData<out Main>
+    suspend fun getWeatherData(cityName:String): LiveData<out Main>
 }
