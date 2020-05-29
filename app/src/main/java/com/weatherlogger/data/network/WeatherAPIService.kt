@@ -1,6 +1,7 @@
-package com.weatherlogger.data
+package com.weatherlogger.data.network
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import com.weatherlogger.data.WeatherResponse
 import kotlinx.coroutines.Deferred
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -19,11 +20,15 @@ interface WeatherAPIService {
     ): Deferred<WeatherResponse>  // part of corountine
 
     companion object{
-        operator fun invoke():WeatherAPIService{
+        operator fun invoke(connectivityInterceptor: ConnectivityInterceptor
+
+        ): WeatherAPIService {
           // return WeatherAPIService()
             val requestInterceptor = Interceptor{ chain ->
                 val url = chain.request()
-                    .url().newBuilder().addQueryParameter("appid", API_KEY)
+                    .url().newBuilder().addQueryParameter("appid",
+                        API_KEY
+                    ).addQueryParameter("units","metric")
                     .build()
 
                 val request = chain.request()
@@ -33,7 +38,10 @@ interface WeatherAPIService {
                 return@Interceptor chain.proceed(request)
             }
 
-            val okHttpClient = OkHttpClient.Builder().addInterceptor(requestInterceptor).build()
+            val okHttpClient = OkHttpClient.Builder()
+                .addInterceptor(requestInterceptor)
+                .addInterceptor(connectivityInterceptor)
+                .build()
 
             return Retrofit.Builder().client(okHttpClient)
                 .baseUrl("http://api.openweathermap.org/data/2.5/")
