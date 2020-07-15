@@ -33,7 +33,8 @@ import java.io.IOException
 import java.util.*
 
 
-class MainWeatherFragment : ScopedFragment(), KodeinAware {
+class MainWeatherFragment : ScopedFragment(), KodeinAware, View.OnClickListener {
+    private var isRefresh = false
     private var cityName = "Delhi"
     override val kodein by closestKodein()
     private val viewModelFactory: CurrentViewModelFactory by instance() //need to fix
@@ -58,12 +59,14 @@ class MainWeatherFragment : ScopedFragment(), KodeinAware {
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext)
         getLastLocation()
         setOnClickListener()
+        btnRefresh.setOnClickListener(this)
+
     }
 
     private fun getLastLocation() {
 
         if (checkPermissions()) {
-            if (isLocationEnabled()) {
+            if (isLocationEnabled() && isRefresh) {
 
                 mFusedLocationClient.lastLocation.addOnCompleteListener(this.requireActivity()) { task ->
                     var location: Location? = task.result
@@ -85,6 +88,7 @@ class MainWeatherFragment : ScopedFragment(), KodeinAware {
 
     private fun getCityName(location: Location) {
         try {
+            isRefresh = false
             val geocoder = Geocoder(mContext, Locale.getDefault())
             val addresses: List<Address> =
                 geocoder.getFromLocation(location.latitude, location.longitude, 1)
@@ -187,6 +191,13 @@ class MainWeatherFragment : ScopedFragment(), KodeinAware {
             override fun onRowClicked(position: Int) {
                 Toast.makeText(mContext, "Details Page.. ", Toast.LENGTH_LONG).show()
             }
+        }
+    }
+
+    override fun onClick(v: View?) {
+        if(v== btnRefresh){
+            isRefresh = true
+            getLastLocation()
         }
     }
 
